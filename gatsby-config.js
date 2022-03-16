@@ -1,9 +1,9 @@
 module.exports = {
   siteMetadata: {
     title: `Ant Money Coding Challenge`,
-    description: `Kick off your next, great Gatsby project with this default starter. This barebones starter ships with the main Gatsby configuration files you might need.`,
-    author: `@gatsbyjs`,
-    siteUrl: `https://gatsbystarterdefaultsource.gatsbyjs.io/`,
+    description: `Geolocation lookup application powered by Gatsby and GeoJS. .`,
+    author: `@filrey on Github`,
+    siteUrl: `https://atmchallengefilibertoreyes.gatsbyjs.io/`,
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
