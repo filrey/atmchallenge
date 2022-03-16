@@ -1,31 +1,86 @@
-import * as React from "react"
-import { Link } from "gatsby"
-import { StaticImage } from "gatsby-plugin-image"
+import React from "react"
 
-import Layout from "../components/layout"
+import NewSearch from "../components/newSearch/newSearch"
+import Searches from "../components/searches/searches"
+import Layout from "../components/layout/layout"
 import Seo from "../components/seo"
 
-const IndexPage = () => (
-  <Layout>
-    <Seo title="Home" />
-    <h1>Hi people</h1>
-    <p>Welcome to your new Gatsby site.</p>
-    <p>Now go build something great.</p>
-    <StaticImage
-      src="../images/gatsby-astronaut.png"
-      width={300}
-      quality={95}
-      formats={["auto", "webp", "avif"]}
-      alt="A Gatsby astronaut"
-      style={{ marginBottom: `1.45rem` }}
-    />
-    <p>
-      <Link to="/page-2/">Go to page 2</Link> <br />
-      <Link to="/using-typescript/">Go to "Using TypeScript"</Link> <br />
-      <Link to="/using-ssr">Go to "Using SSR"</Link> <br />
-      <Link to="/using-dsg">Go to "Using DSG"</Link>
-    </p>
-  </Layout>
-)
+class IndexPage extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      country: "",
+      city: "",
+      ip: "",
+      searches: [],
+    }
+  }
+  // Sends new IP request to GeoJs and stores result in state
+  searchIpHandler(address) {
+    fetch("https://get.geojs.io/v1/ip/geo/" + address + ".json")
+      .then(response => {
+        return response.json()
+      })
+      .then(json => {
+        let countryJson = json.country ? json.country : "N/A"
+        let cityJson = json.city ? json.city : "N/A"
+        let ipJson = json.ip ? json.ip : "N/A"
+        let newSearch = { country: countryJson, city: cityJson, ip: ipJson }
+
+        this.setState({
+          country: countryJson,
+          city: cityJson,
+          ip: ipJson,
+          searches: [newSearch, ...this.state.searches],
+        })
+      })
+      .catch(error => {
+        alert("Invalid Input")
+      })
+  }
+  // On app startup sends new IP request to GeoJs and stores result of current user in state
+  componentDidMount() {
+    fetch("https://get.geojs.io/v1/ip/geo.json")
+      .then(response => {
+        return response.json()
+      })
+      .then(json => {
+        let countryJson = json.country ? json.country : "N/A"
+        let cityJson = json.city ? json.city : "N/A"
+        let ipJson = json.ip ? json.ip : "N/A"
+        let newSearch = { country: countryJson, city: cityJson, ip: ipJson }
+        this.setState({
+          country: countryJson,
+          city: cityJson,
+          ip: ipJson,
+          searches: [newSearch],
+        })
+      })
+      .catch(error => {
+        alert("Invalid Input")
+      })
+  }
+
+  render() {
+    let { country, city, ip } = this.state
+
+    // Passes a new IP search to the search handler
+    const addSearchHandler = search => {
+      this.searchIpHandler(search)
+    }
+
+    return (
+      <Layout>
+        <Seo title="Home" />
+        <h1>Where am I?</h1>
+        <p>Your IP address: {ip}</p>
+        <p>Country: {country}</p>
+        <p>City: {city}</p>
+        <NewSearch onSearch={addSearchHandler} />
+        <Searches items={this.state.searches} />
+      </Layout>
+    )
+  }
+}
 
 export default IndexPage
